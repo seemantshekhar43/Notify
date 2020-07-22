@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
+import 'package:notify/widgets/add_note.dart';
 import 'package:notify/widgets/notes_list.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -20,7 +21,14 @@ class NotesListScreen extends StatelessWidget {
         curve: Curves.bounceIn,
         children: [
           SpeedDialChild(
-              child: Icon(Icons.note_add), label: 'Add Note', onTap: () {}),
+              child: Icon(Icons.note_add), label: 'Add Note', onTap: () {
+            showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => Wrap(children: <Widget>[
+                  AddNote()
+                ],));
+          }),
         ],
       ),
       body: Padding(

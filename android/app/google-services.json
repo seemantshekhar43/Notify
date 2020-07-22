@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "192403779073",
+    "firebase_url": "https://biblography-6adfa.firebaseio.com",
+    "project_id": "biblography-6adfa",
+    "storage_bucket": "biblography-6adfa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:192403779073:android:f5300f9728afa838cc5a00",
+        "android_client_info": {
+          "package_name": "com.seemantshekhar.notify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "192403779073-4q39m1e9tj1ucb02bead2qcrui8q8i5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC-3bKSqLrGZHHa5YT1wMm8IEUzIuSGtk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "192403779073-4q39m1e9tj1ucb02bead2qcrui8q8i5b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

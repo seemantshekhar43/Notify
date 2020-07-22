@@ -37,6 +37,10 @@ dev_dependencies:
   flutter_speed_dial: ^1.2.5
   zefyr: ^0.11.0
   html_editor: ^1.0.1
+  animated_text_kit: ^2.2.0
+  cloud_firestore: 0.13.4+2
+  firebase_auth: ^0.16.1
+  http: ^0.12.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -22,7 +22,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       ),
       body: Center(
         child: Text(
-          _note.description
+          _note.tags.length.toString()
         ),
       ),
     );

@@ -94,7 +94,7 @@ class _AddNotebookState extends State<AddNotebook> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Add New Notebook",
+                    (widget.notebookId!= null)? 'Edit Notebook' : 'Add New Notebook',
                     style:
                         TextStyle(fontWeight: FontWeight.w500, fontSize: 22.0),
                   ),
@@ -201,7 +201,7 @@ class _AddNotebookState extends State<AddNotebook> {
                           if(response){
                             _delete();
                             Navigator.pop(context);
-                            Navigator.pushReplacementNamed(context, '/');
+                            Navigator.pop(context);
 
 
                           }
