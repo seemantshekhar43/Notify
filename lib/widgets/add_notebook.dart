@@ -29,11 +29,11 @@ class _AddNotebookState extends State<AddNotebook> {
           .findById(widget.notebookId);
       _name = notebook.title;
       _labelId = notebook.labelId;
-      _list = notebook.notesList;
+      //_list = notebook.notesList;
     }
   }
 
-  void _save() {
+  void _save() async{
     final isValid = _formKey.currentState.validate();
     if (!isValid) return;
     _formKey.currentState.save();
@@ -46,31 +46,45 @@ class _AddNotebookState extends State<AddNotebook> {
           id: widget.notebookId,
           title: _name,
           labelId: _labelId,
-          notesList: _list,
-          date: DateTime.now());
-      Provider.of<Notebooks>(context, listen: false).updateNotebook(notebook);
+      );
+     try{
+       await Provider.of<Notebooks>(context, listen: false).updateNotebook(notebook);
+     }catch(error){
+
+     }
     } else {
       final notebook = Notebook(
         id: DateTime.now().toString(),
         title: _name,
         labelId: _labelId,
-        date: DateTime.now(),
+        //date: DateTime.now(),
       );
-      Provider.of<Notebooks>(context, listen: false).addNotebook(notebook);
+     await Provider.of<Notebooks>(context, listen: false).addNotebook(notebook);
+      Navigator.pop(context);
     }
 
     setState(() {
       _isLoadingSave = false;
     });
-    Navigator.pop(context);
+
   }
 
-  void _delete(){
+  void _delete() async{
     setState(() {
       _isLoadingDelete = true;
     });
-    Provider.of<Notebooks>(context, listen: false).deleteNotebook(widget.notebookId);
-    Provider.of<Notes>(context, listen: false).deleteNotesByNotebookId(widget.notebookId);
+    try{
+      await Provider.of<Notes>(context, listen: false).deleteNotesByNotebookId(widget.notebookId);
+      await Provider.of<Notebooks>(context, listen: false).deleteNotebook(widget.notebookId);
+
+      Navigator.pop(context);
+      Navigator.pop(context);
+    }catch(error){
+
+    }
+
+
+
 
   }
 
@@ -200,8 +214,7 @@ class _AddNotebookState extends State<AddNotebook> {
                           ));
                           if(response){
                             _delete();
-                            Navigator.pop(context);
-                            Navigator.pop(context);
+
 
 
                           }

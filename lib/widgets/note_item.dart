@@ -63,9 +63,11 @@ class NoteItem extends StatelessWidget {
                     ],
                   ));
         },
-        onDismissed: (direction) {
-          Provider.of<Notes>(context, listen: false).deleteNote(note.id);
-          //Provider.of<Notebook>(context, listen: false).notesList.removeWhere((n) => n == note.id);
+        onDismissed: (direction) async{
+          try {
+            await Provider.of<Notes>(context, listen: false)
+                .deleteNote(note.id);
+          } catch (error) {}
         },
         child: Container(
           margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
@@ -100,7 +102,7 @@ class NoteItem extends StatelessWidget {
                     ),
                     Spacer(),
                     Text(
-                      DateFormat('dd/MM/yy').format(note.date),
+                      DateFormat('dd/MM/yy').format(note.timestamp),
                       style: kNoteDateTextStyle,
                     ),
                   ],

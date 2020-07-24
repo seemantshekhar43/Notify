@@ -9,7 +9,13 @@ class NotebooksList extends StatelessWidget {
     final notebooksData = Provider.of<Notebooks>(context);
     final notebooks = notebooksData.list;
 
-    return ListView.builder(
+    return (notebooks.length<1)? Center(child: Text(
+      'Nothing to display!! Add one!!',
+      style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 18.0
+      ),
+    ),):ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: notebooks.length,
       itemBuilder: (context, i) {
