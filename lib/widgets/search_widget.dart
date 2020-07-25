@@ -91,6 +91,7 @@ class SearchNotes extends SearchDelegate<NoteItem> {
     );
   }
 
+  
 
 
 
