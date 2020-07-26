@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _checkScreenshots();
+//    _checkScreenshots();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -40,8 +40,8 @@ class MyApp extends StatelessWidget {
         home:  StreamBuilder(
             stream: FirebaseAuth.instance.onAuthStateChanged,
             builder: (context, userSnapshot) {
-//              if(userSnapshot.connectionState == ConnectionState.waiting)
-//                return SplashScreen();
+              if(userSnapshot.connectionState == ConnectionState.waiting)
+                return SplashScreen();
               if (userSnapshot.hasData) {
                 return Dashboard();
               } else
@@ -61,16 +61,5 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Future<void> _checkScreenshots() async{
-    String res = '';
-    try{
-      res = await kPlatform.invokeMethod("getStatus");
-    } catch(e){
-      print(e);
-    }
 
-    if(res.isNotEmpty){
-      print(res);
-    }
-  }
 }

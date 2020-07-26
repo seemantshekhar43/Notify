@@ -10,7 +10,8 @@ import 'package:flushbar/flushbar.dart';
 class AddNote extends StatefulWidget {
   final noteId;
   final currentNotebookId;
-  AddNote({this.noteId, this.currentNotebookId});
+  final markdownContent;
+  AddNote({this.noteId, this.currentNotebookId, this.markdownContent:'Hi, Start Typing...'});
   @override
   _AddNoteState createState() => _AddNoteState();
 }
@@ -76,7 +77,7 @@ class _AddNoteState extends State<AddNote> {
       id: DateTime.now().toString(),
       title: _title,
       tags: _tags,
-      body: 'Hi, start typing...',
+      body: widget.markdownContent,
       notebookId: _notebookId,
       timestamp: DateTime.now(),
     );

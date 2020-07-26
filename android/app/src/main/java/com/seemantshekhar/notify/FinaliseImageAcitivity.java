@@ -88,7 +88,7 @@ public class FinaliseImageAcitivity extends AppCompatActivity {
             finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
-            fileName = fname;
+            fileName = root+"/Notify/"+fname;
 
         } catch (Exception e) {
             e.printStackTrace();

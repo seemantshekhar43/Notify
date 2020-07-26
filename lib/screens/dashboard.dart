@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:flushbar/flushbar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
 import 'package:notify/providers/notebooks.dart';
@@ -22,20 +25,21 @@ class _DashboardState extends State<Dashboard> {
   bool _isLoading = false;
   @override
   void initState() {
+    _checkScreenshots();
     _fetchNotesAndNotebooks();
     super.initState();
   }
 
-  void _fetchNotesAndNotebooks() async{
+  void _fetchNotesAndNotebooks() async {
     setState(() {
       _isLoading = true;
     });
 
-    try{
+    try {
       await Provider.of<Notebooks>(context, listen: false).fetchNotebooks();
-      await Provider.of<Notes>(context,listen: false).fetchNotes();
-    } catch(error){
-      Scaffold.of(context).showSnackBar(SnackBar(
+      await Provider.of<Notes>(context, listen: false).fetchNotes();
+    } catch (error) {
+      Scaffold. of(context).showSnackBar(SnackBar(
         content: Text('Error Loading data'),
       ));
     }
@@ -44,7 +48,6 @@ class _DashboardState extends State<Dashboard> {
       _isLoading = false;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +117,11 @@ class _DashboardState extends State<Dashboard> {
             Container(
                 width: double.infinity,
                 height: size.height * 0.3,
-                child: _isLoading? Center(child: CircularProgressIndicator(),): NotebooksList()),
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : NotebooksList()),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -134,7 +141,11 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
             Expanded(
-              child: _isLoading? Center(child: CircularProgressIndicator(),):NotesList(),
+              child: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : NotesList(),
             ),
           ],
         ),
@@ -143,15 +154,139 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _startFloating() async {
-    String res = '';
     try {
-      res = await kPlatform.invokeMethod("startFloating");
+      String res = await kPlatform.invokeMethod<String>("startFloating");
+      print(res);
     } catch (e) {
       print(e);
     }
+  }
 
-    if (res.isNotEmpty) {
-      print(res);
+  Future<void> _checkScreenshots() async {
+    String res = '';
+    try {
+
+      res = await kPlatform.invokeMethod("getStatus");
+      if (res.isNotEmpty) {
+        print('path is: $res');
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => RenderImage(path: res),
+        );
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }
+
+class RenderImage extends StatefulWidget {
+  final String path;
+
+  RenderImage({this.path});
+
+  @override
+  _RenderImageState createState() => _RenderImageState();
+}
+
+class _RenderImageState extends State<RenderImage> {
+  String _markdownText;
+  bool _isLoading = false;
+
+  _convert() async{
+    //convert image to text
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.delayed(Duration(seconds: 5));
+    setState(() {
+      _markdownText = 'Text to image';
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = DeviceSize(context: context);
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: size.width*0.05, vertical: size.height*0.03),
+        height: size.height * 0.55,
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+             'Convert To Text Note',
+              style:
+              TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+            ),
+            SizedBox(height: size.height * 0.03),
+            Center(
+              child: Container(
+                height: size.height * 0.3,
+                width: size.height*0.3,
+                child: Image.file(File(widget.path)),
+              ),
+            ),
+            Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                OutlineButton(
+                  splashColor: Theme.of(context).primaryColor,
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                  padding: EdgeInsets.symmetric(
+                      vertical: 15, horizontal: size.width * 0.06),
+                  color: Colors.white,
+                  onPressed: ()  {
+                    Navigator.of(context).pop();
+
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
+                ),
+                (_isLoading)? CircularProgressIndicator() :FlatButton(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 15, horizontal: size.width * 0.06),
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () async {
+                    if(_markdownText!= null){
+                      Navigator.of(context).pop();
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => Wrap(
+                            children: <Widget>[AddNote(markdownContent: _markdownText,)],
+                          ));
+                    }else{
+                      _convert();
+                    }
+
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Text(
+                    (_markdownText!= null)? 'Next' :'Convert To Text',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
