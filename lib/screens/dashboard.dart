@@ -1,11 +1,8 @@
 import 'dart:io';
-import 'package:flushbar/flushbar.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
-import 'package:notify/screens/note_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:notify/screens/notebooks_list_screen.dart';
 import 'package:notify/screens/notes_list_screen.dart';

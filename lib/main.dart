@@ -8,6 +8,7 @@ import 'package:notify/screens/authentication/splash_screen.dart';
 import 'package:notify/screens/authentication/welcome_screen.dart';
 import 'package:notify/screens/dashboard.dart';
 import 'package:notify/screens/edit_note_screen.dart';
+import 'package:notify/screens/new_note_detail.dart';
 import 'package:notify/screens/note_detail_screen.dart';
 import 'package:notify/screens/notebook_screen.dart';
 import 'package:notify/screens/notebooks_list_screen.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
           SignupScreen.routeName: (context) => SignupScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
           SplashScreen.routeName: (context) => SplashScreen(),
+
         },
       ),
     );

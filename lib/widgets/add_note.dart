@@ -3,6 +3,7 @@ import 'package:notify/constant.dart';
 import 'package:notify/providers/note.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
+import 'package:notify/screens/new_note_detail.dart';
 import 'package:notify/screens/note_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
