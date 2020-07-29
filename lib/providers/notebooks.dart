@@ -70,7 +70,8 @@ class Notebooks extends ChangeNotifier {
   }
 
   Notebook findById(String id) {
-    return _list.firstWhere((notebook) => notebook.id == id);
+
+        return _list.firstWhere((notebook) => notebook.id == id, orElse: () => null);
   }
 
   Future<void> updateNotebook(Notebook  notebook) async{
@@ -102,7 +103,7 @@ class Notebooks extends ChangeNotifier {
         res.documents.forEach((document) {
           Notebook notebook = Notebook(
             id:document.documentID,
-            labelId: document['labelID'],
+            labelId: document['labelID']??'1',
             title: document['title'],
           );
           _list.add(notebook);

@@ -83,7 +83,7 @@ class Notes extends ChangeNotifier {
   }
 
   Note getNoteById(id) {
-    return _list.firstWhere((note) => note.id == id);
+    return _list.firstWhere((note) => note.id == id, orElse: () => null);
   }
 
   Future<String> addNote(Note n) async {

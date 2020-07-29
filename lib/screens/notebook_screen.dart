@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:notify/screens/dashboard.dart';
+import 'package:notify/screens/notebooks_list_screen.dart';
+import 'package:notify/screens/notes_list_screen.dart';
 import 'package:notify/widgets/add_note.dart';
 import 'package:notify/widgets/add_notebook.dart';
 import 'package:notify/widgets/notes_list.dart';
@@ -12,25 +15,25 @@ class NotebookScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final  id = ModalRoute.of(context).settings.arguments as String;
-    final notebook = Provider.of<Notebooks>(context, listen: true).findById(id);
+    final notebook = Provider.of<Notebooks>(context).findById(id);
     final size = DeviceSize(context: context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kLabelColorMap[notebook.labelId],
+        backgroundColor: (notebook!= null)?kLabelColorMap[notebook.labelId]:Colors.red,
         title: Text(
-          notebook.title,
+          (notebook!= null)?notebook.title:'',
         ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.edit),
-            onPressed: (){
+            onPressed:  (notebook!= null)?(){
               showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
                   builder: (context) => Wrap(children: <Widget>[
                     AddNotebook(notebookId: notebook.id,)
                   ],));
-            },
+            }:null,
           )
         ],
       ),
@@ -49,10 +52,10 @@ class NotebookScreen extends StatelessWidget {
           }),
         ],
       ),
-      body: Padding(
+      body: (notebook!= null)? Padding(
         padding: EdgeInsets.all(size.width*0.02),
         child: NotesList(notebookId: notebook.id,),
-      ),
+      ):Center(child: Text('Notebook Deleted'),),
     );
   }
 }

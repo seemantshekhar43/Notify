@@ -2,9 +2,15 @@ package com.seemantshekhar.notify;
 
 //Replace all nloatingWidgetService with FloatingWidgetService
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
@@ -20,6 +26,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import static android.content.ContentValues.TAG;
 
@@ -62,8 +70,36 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         addFloatingWidgetView(inflater);
         implementClickListeners();
         implementTouchListenerToFloatingWidgetView();
+
+
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        String NOTIFICATION_CHANNEL_ID = "com.seemantshekhar.notify";
+        String channelName = "My Background Service";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        Intent captureIntent = new Intent(this, ScreenCaptureImageActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, captureIntent, 0);
+
+        Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setOngoing(true)
+                .setContentTitle("Notify Service")
+                .setContentText("Tap to take screenshot")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        startForeground(1, notification);
+        return  START_NOT_STICKY;
+    }
 
     /*  Add Remove View to Window Manager  */
     private View addRemoveView(LayoutInflater inflater) {

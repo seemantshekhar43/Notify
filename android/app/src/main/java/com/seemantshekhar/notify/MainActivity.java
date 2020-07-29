@@ -1,6 +1,8 @@
 package com.seemantshekhar.notify;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -8,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,9 +40,30 @@ public class MainActivity extends FlutterActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             //If the draw over permission is not available open the settings screen
             //to grant the permission.
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
+
+            if(checkMIUI()){
+
+                AlertDialog.Builder alertadd = new AlertDialog.Builder(MainActivity.this);
+                alertadd.setCancelable(false);
+                LayoutInflater factory = LayoutInflater.from(MainActivity.this);
+                final View view = factory.inflate(R.layout.dialog_image_layout, null);
+                alertadd.setView(view);
+                alertadd.setNeutralButton("OK!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dlg, int sumthin) {
+                        Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR"); intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity"); intent.putExtra("extra_pkgname", getPackageName());
+                        startActivity(intent);
+                    }
+                });
+
+                alertadd.show();
+
+
+            }else{
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
+
             //startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE);
 
         }
@@ -116,6 +141,7 @@ public class MainActivity extends FlutterActivity {
         startService(new Intent(MainActivity.this, FloatingWidgetService.class));
         System.out.println("called");
         finish();
+
     }
 
 //    @Override
@@ -170,6 +196,11 @@ public class MainActivity extends FlutterActivity {
                 Toast.makeText(getApplicationContext(), "Grant permissions", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private boolean checkMIUI(){
+        String manufacturer = "xiaomi";
+        return manufacturer.equalsIgnoreCase(Build.MANUFACTURER);
     }
 }
 

@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
           SignupScreen.routeName: (context) => SignupScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
           SplashScreen.routeName: (context) => SplashScreen(),
+          Dashboard.routeName:(context) => Dashboard(),
 
         },
       ),

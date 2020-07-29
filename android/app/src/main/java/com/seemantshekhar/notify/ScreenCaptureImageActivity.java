@@ -1,9 +1,12 @@
 package com.seemantshekhar.notify;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.display.DisplayManager;
@@ -12,8 +15,10 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
@@ -29,7 +34,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 
 public class ScreenCaptureImageActivity extends Activity {
@@ -76,12 +83,32 @@ public class ScreenCaptureImageActivity extends Activity {
                     bitmap.copyPixelsFromBuffer(buffer);
                     if(flag){
                         // write bitmap to a file
-                        if(IMAGES_PRODUCED >=5){
+                        if(IMAGES_PRODUCED >=7){
                             //fos = new FileOutputStream(STORE_DIRECTORY + "/myscreen_" + IMAGES_PRODUCED + ".png");
                             //bitmap.compress(CompressFormat.JPEG, 100, fos);
                             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                             //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                            String path ="";
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+
+                                ContentResolver contentResolver = getContentResolver();
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, System.currentTimeMillis()+".jpg");
+                                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+                                contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+                                Uri imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+                                OutputStream f = contentResolver.openOutputStream(Objects.requireNonNull(imageUri));
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, f);
+                                assert f != null;
+                                f.close();
+                                path = imageUri.toString();
+
+
+                            }else{
+                                path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "title", null);
+                            }
+
                             //flag = false;
                             //crop = true;
                             Intent intent = new Intent(ScreenCaptureImageActivity.this, FinaliseImageAcitivity.class);
@@ -187,6 +214,9 @@ public class ScreenCaptureImageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        stopService(new Intent(this, FloatingWidgetService.class));
         setContentView(R.layout.activity_screen_capture);
         System.out.println("THis line was called screen capture");
 

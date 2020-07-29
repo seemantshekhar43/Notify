@@ -1,9 +1,11 @@
 package com.seemantshekhar.notify;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -90,19 +92,27 @@ public class FinaliseImageAcitivity extends AppCompatActivity {
             out.close();
             fileName = root+"/Notify/"+fname;
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        File fdelete = new File(getFilePath(actualUri));
-
-        if (fdelete.exists()) {
-            if (fdelete.delete()) {
-                System.out.println("file Deleted :" );
-            } else {
-                System.out.println("file not Deleted :");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            ContentResolver contentResolver = getContentResolver();
+            int deleteFile = contentResolver.delete(actualUri, null, null);
+            System.out.println(deleteFile);
+        }else{
+            File fDelete = new File(getFilePath(actualUri));
+            System.out.println("to delete: "+ getFilePath(actualUri));
+            if (fDelete.exists()) {
+                if (fDelete.delete()) {
+                    System.out.println("file Deleted :" );
+                } else {
+                    System.out.println("file not Deleted :");
+                }
             }
         }
+
     }
     private String getFilePath(Uri uri) {
         String[] projection = {MediaStore.Images.Media.DATA};

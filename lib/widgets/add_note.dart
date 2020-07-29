@@ -8,11 +8,16 @@ import 'package:notify/screens/note_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
 
+import 'add_notebook.dart';
+
 class AddNote extends StatefulWidget {
   final noteId;
   final currentNotebookId;
   final markdownContent;
-  AddNote({this.noteId, this.currentNotebookId, this.markdownContent:'Hi, Start Typing...'});
+  AddNote(
+      {this.noteId,
+      this.currentNotebookId,
+      this.markdownContent: 'Hi, Start Typing...'});
   @override
   _AddNoteState createState() => _AddNoteState();
 }
@@ -63,10 +68,10 @@ class _AddNoteState extends State<AddNote> {
   Future<void> _save() async {
     final isValid = _formKey.currentState.validate();
     if (!isValid) return;
-    if(_notebookId.isEmpty){
+    if (_notebookId.isEmpty) {
       Flushbar(
-        message:  "Add notebook first",
-        duration:  Duration(seconds: 3),
+        message: "Add notebook first",
+        duration: Duration(seconds: 3),
       )..show(context);
       return;
     }
@@ -87,11 +92,10 @@ class _AddNoteState extends State<AddNote> {
       if (_noteId != null) Navigator.pop(context);
       Navigator.pushNamed(context, NoteDetailScreen.routeName,
           arguments: _noteId);
-
     } catch (error) {
       Flushbar(
-        message:  'Adding note failed!',
-        duration:  Duration(seconds: 3),
+        message: 'Adding note failed!',
+        duration: Duration(seconds: 3),
       )..show(context);
     }
     setState(() {
@@ -107,8 +111,7 @@ class _AddNoteState extends State<AddNote> {
     try {
       await Provider.of<Notes>(context, listen: false)
           .deleteNote(widget.noteId);
-      Navigator.pop(context);
-      Navigator.pop(context);
+      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
       return;
     } catch (error) {}
 
@@ -119,7 +122,7 @@ class _AddNoteState extends State<AddNote> {
 
   @override
   Widget build(BuildContext context) {
-    final notebooksData = Provider.of<Notebooks>(context, listen: false);
+    final notebooksData = Provider.of<Notebooks>(context, listen: true);
     final notebooks = notebooksData.list;
     final size = DeviceSize(context: context);
     return Container(
@@ -154,7 +157,7 @@ class _AddNoteState extends State<AddNote> {
                       return null;
                     },
                     onSaved: (value) {
-                      _title = value;
+                      _title = value.trim();
                     },
                     decoration: InputDecoration(
                         labelText: 'Title', hintText: 'Enter Note title'),
@@ -166,8 +169,9 @@ class _AddNoteState extends State<AddNote> {
                     keyboardType: TextInputType.text,
                     onFieldSubmitted: (value) {
                       setState(() {
-                        if (value.isNotEmpty && !_tags.contains(value))
-                          _tags.insert(0, value);
+                        if (value.trim().isNotEmpty &&
+                            !_tags.contains(value.trim()))
+                          _tags.insert(0, value.trim());
                       });
                     },
                     textAlign: TextAlign.center,
@@ -222,62 +226,89 @@ class _AddNoteState extends State<AddNote> {
                   Container(
                     width: double.infinity,
                     height: size.height * 0.3,
-                    child: (notebooks.length<1)? Center(child: Text(
-                      'Add notebook first',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18.0
-                      ),
-                    ),):ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: notebooks.length,
-                      itemBuilder: (context, i) {
-                        return ChangeNotifierProvider.value(
-                          value: notebooks[i],
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _notebookId = notebooks[i].id;
-                              });
-                            },
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: size.width * 0.02,
-                                  vertical: size.height * 0.02),
-                              height: size.height * 0.1,
-                              width: size.width * 0.4,
-                              decoration: BoxDecoration(
-                                color: kLabelColorMap[notebooks[i].labelId],
-                                borderRadius: BorderRadius.circular(20.0),
-                                boxShadow: [
-                                  BoxShadow(color: Colors.transparent)
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: EdgeInsets.all(size.width * 0.04),
-                                    child: Text(
-                                      notebooks[i].title,
-                                      style: kNotebookCardTitleTextStyle,
+                    child: (notebooks.length < 1)
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.create_new_folder, color: Colors.black54,),
+                                  iconSize: size.height * 0.06,
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (context) => Wrap(
+                                              children: <Widget>[AddNotebook()],
+                                            ));
+                                  },
+                                ),
+
+                                Text(
+                                  'Add notebook first',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black54,
+                                      fontSize: 18.0),
+                                )
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: notebooks.length,
+                            itemBuilder: (context, i) {
+                              return ChangeNotifierProvider.value(
+                                value: notebooks[i],
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _notebookId = notebooks[i].id;
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: size.width * 0.02,
+                                        vertical: size.height * 0.02),
+                                    height: size.height * 0.1,
+                                    width: size.width * 0.4,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          kLabelColorMap[notebooks[i].labelId],
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      boxShadow: [
+                                        BoxShadow(color: Colors.transparent)
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.all(size.width * 0.04),
+                                          child: Text(
+                                            notebooks[i].title,
+                                            style: kNotebookCardTitleTextStyle,
+                                          ),
+                                        ),
+                                        Center(
+                                          child:
+                                              (_notebookId == notebooks[i].id)
+                                                  ? CircleAvatar(
+                                                      child: Icon(Icons.check),
+                                                    )
+                                                  : null,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Center(
-                                    child: (_notebookId == notebooks[i].id)
-                                        ? CircleAvatar(
-                                            child: Icon(Icons.check),
-                                          )
-                                        : null,
-                                  ),
-                                ],
-                              ),
-                            ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
                   SizedBox(
                     height: size.height * 0.03,
@@ -321,7 +352,6 @@ class _AddNoteState extends State<AddNote> {
                                           ));
                                   if (response) {
                                     _delete();
-
                                   }
                                 },
                                 shape: RoundedRectangleBorder(

@@ -33,12 +33,12 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     final _note =
         Provider.of<Notes>(context, listen: false).getNoteById(_noteId);
     final size = DeviceSize(context: context);
-    return ChangeNotifierProvider<Note>.value(
+    return  (_note!= null)?ChangeNotifierProvider<Note>.value(
       value: _note,
       child: Consumer<Note>(
         builder: (context, note, child) => Scaffold(
           appBar: AppBar(
-            title: Text(note.title),
+            title: (_note!= null)?Text(note.title):'',
             actions: <Widget>[
               IconButton(
                 onPressed: () {
@@ -83,7 +83,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
               ),
             ],
           ),
-          body: Stack(
+          body:  (_note!= null)?Stack(
             children: <Widget>[
 
               Column(
@@ -188,9 +188,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                     )),
               ),
             ],
-          ),
+          ): Center(child: Text('Note Deleted'),),
         ),
       ),
-    );
+    ): Center(child: Text('Note Deleted'),);
   }
 }

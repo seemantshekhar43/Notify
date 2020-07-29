@@ -1,6 +1,8 @@
 import 'package:notify/providers/notebook.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
+import 'package:notify/screens/dashboard.dart';
+import 'package:notify/screens/notebooks_list_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
@@ -77,8 +79,9 @@ class _AddNotebookState extends State<AddNotebook> {
       await Provider.of<Notes>(context, listen: false).deleteNotesByNotebookId(widget.notebookId);
       await Provider.of<Notebooks>(context, listen: false).deleteNotebook(widget.notebookId);
 
-      Navigator.pop(context);
-      Navigator.pop(context);
+//      Navigator.pop(context);
+      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+
     }catch(error){
 
     }
@@ -124,7 +127,7 @@ class _AddNotebookState extends State<AddNotebook> {
                       return null;
                     },
                     onSaved: (value) {
-                      _name = value;
+                      _name = value.trim();
                     },
                     decoration: InputDecoration(
                         labelText: 'Name', hintText: 'Enter Notebook name'),

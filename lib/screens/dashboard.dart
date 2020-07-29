@@ -1,8 +1,11 @@
+import 'package:flushbar/flushbar.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
+import 'package:notify/utilities/api_helper.dart';
+import 'package:notify/utilities/http_exception.dart';
 import 'package:provider/provider.dart';
 import 'package:notify/screens/notebooks_list_screen.dart';
 import 'package:notify/screens/notes_list_screen.dart';
@@ -36,9 +39,10 @@ class _DashboardState extends State<Dashboard> {
       await Provider.of<Notebooks>(context, listen: false).fetchNotebooks();
       await Provider.of<Notes>(context, listen: false).fetchNotes();
     } catch (error) {
-      Scaffold. of(context).showSnackBar(SnackBar(
-        content: Text('Error Loading data'),
-      ));
+      Flushbar(
+        message:  'Unable to Fetch Data.',
+        duration:  Duration(seconds: 3),
+      )..show(context);
     }
 
     setState(() {
@@ -196,11 +200,43 @@ class _RenderImageState extends State<RenderImage> {
     setState(() {
       _isLoading = true;
     });
-    await Future.delayed(Duration(seconds: 5));
+
+    try{
+      final text= await renderImageToText(widget.path);
+      if(text.isNotEmpty){
+        setState(() {
+          _isLoading = false;
+          _markdownText = text;
+        });
+
+
+      }else{
+        Flushbar(
+          message:  'Image can\'t be converted into text.',
+          duration:  Duration(seconds: 3),
+        )..show(context);
+      }
+
+//      await Future.delayed(
+//          Duration(seconds: 5)
+//      );
+    } on HttpException catch(error){
+      Flushbar(
+        message:  error.toString(),
+        duration:  Duration(seconds: 3),
+      )..show(context);
+
+    }catch(error){
+      Flushbar(
+        message:  "Converting To Text Failed!",
+        duration:  Duration(seconds: 3),
+      )..show(context);
+    }
+
     setState(() {
-      _markdownText = 'Text to image';
       _isLoading = false;
     });
+
   }
 
   @override
