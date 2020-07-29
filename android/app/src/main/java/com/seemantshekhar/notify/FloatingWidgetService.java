@@ -65,7 +65,6 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
         //Init LayoutInflater
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-
         addRemoveView(inflater);
         addFloatingWidgetView(inflater);
         implementClickListeners();
@@ -104,7 +103,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     /*  Add Remove View to Window Manager  */
     private View addRemoveView(LayoutInflater inflater) {
         //Inflate the removing view layout we created
-        removeFloatingWidgetView = inflater.inflate(R.layout.remove_floating_layout_widget, null);
+      removeFloatingWidgetView = inflater.inflate(R.layout.remove_floating_layout_widget, null);
 
         //Add the view to the window.
         WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
@@ -118,11 +117,11 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         paramRemove.gravity = Gravity.TOP | Gravity.LEFT;
 
         //Initially the Removing widget view is not visible, so set visibility to GONE
-        removeFloatingWidgetView.setVisibility(View.GONE);
+      removeFloatingWidgetView.setVisibility(View.GONE);
         remove_image_view = (ImageView) removeFloatingWidgetView.findViewById(R.id.remove_img);
 
         //Add the view to the window
-        mWindowManager.addView(removeFloatingWidgetView, paramRemove);
+      mWindowManager.addView(removeFloatingWidgetView, paramRemove);
         return remove_image_view;
     }
 
@@ -330,7 +329,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     }
 
     private void implementClickListeners() {
-        mFloatingWidgetView.findViewById(R.id.close_floating_view).setOnClickListener(this);
+        //mFloatingWidgetView.findViewById(R.id.close_floating_view).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.close_expanded_view).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.open_activity_button).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.take_screenshot_button).setOnClickListener(this);
@@ -340,10 +339,10 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.close_floating_view:
-                //close the service and remove the from from the window
-                stopSelf();
-                break;
+//            case R.id.close_floating_view:
+//                //close the service and remove the from from the window
+//                stopSelf();
+//                break;
             case R.id.close_expanded_view:
                 collapsedView.setVisibility(View.VISIBLE);
                 expandedView.setVisibility(View.GONE);

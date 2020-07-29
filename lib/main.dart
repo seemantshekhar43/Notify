@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Notify',
+
         debugShowCheckedModeBanner: false,
         home:  StreamBuilder(
             stream: FirebaseAuth.instance.onAuthStateChanged,

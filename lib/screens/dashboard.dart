@@ -1,5 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'dart:io';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
 import 'package:notify/providers/notebooks.dart';
@@ -40,8 +41,8 @@ class _DashboardState extends State<Dashboard> {
       await Provider.of<Notes>(context, listen: false).fetchNotes();
     } catch (error) {
       Flushbar(
-        message:  'Unable to Fetch Data.',
-        duration:  Duration(seconds: 3),
+        message: 'Unable to Fetch Data.',
+        duration: Duration(seconds: 3),
       )..show(context);
     }
 
@@ -55,10 +56,21 @@ class _DashboardState extends State<Dashboard> {
     final DeviceSize size = DeviceSize(context: context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notify'),
+        title: Text(
+          'Notify',
+          style: TextStyle(
+
+            fontSize: 25.0,
+          ),
+        ),
+
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.camera),
+            icon: Icon(
+              Icons.camera,
+
+              size: 32.0,
+            ),
             onPressed: () {
               _startFloating();
             },
@@ -166,7 +178,6 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _checkScreenshots() async {
     String res = '';
     try {
-
       res = await kPlatform.invokeMethod("getStatus");
       if (res.isNotEmpty) {
         print('path is: $res');
@@ -195,48 +206,44 @@ class _RenderImageState extends State<RenderImage> {
   String _markdownText;
   bool _isLoading = false;
 
-  _convert() async{
+  _convert() async {
     //convert image to text
     setState(() {
       _isLoading = true;
     });
 
-    try{
-      final text= await renderImageToText(widget.path);
-      if(text.isNotEmpty){
+    try {
+      final text = await renderImageToText(widget.path);
+      if (text.isNotEmpty) {
         setState(() {
           _isLoading = false;
           _markdownText = text;
         });
-
-
-      }else{
+      } else {
         Flushbar(
-          message:  'Image can\'t be converted into text.',
-          duration:  Duration(seconds: 3),
+          message: 'Image can\'t be converted into text.',
+          duration: Duration(seconds: 3),
         )..show(context);
       }
 
 //      await Future.delayed(
 //          Duration(seconds: 5)
 //      );
-    } on HttpException catch(error){
+    } on HttpException catch (error) {
       Flushbar(
-        message:  error.toString(),
-        duration:  Duration(seconds: 3),
+        message: error.toString(),
+        duration: Duration(seconds: 3),
       )..show(context);
-
-    }catch(error){
+    } catch (error) {
       Flushbar(
-        message:  "Converting To Text Failed!",
-        duration:  Duration(seconds: 3),
+        message: "Converting To Text Failed!",
+        duration: Duration(seconds: 3),
       )..show(context);
     }
 
     setState(() {
       _isLoading = false;
     });
-
   }
 
   @override
@@ -247,22 +254,22 @@ class _RenderImageState extends State<RenderImage> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: size.width*0.05, vertical: size.height*0.03),
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.05, vertical: size.height * 0.03),
         height: size.height * 0.55,
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-             'Convert To Text Note',
-              style:
-              TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+              'Convert To Text Note',
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
             ),
             SizedBox(height: size.height * 0.03),
             Center(
               child: Container(
                 height: size.height * 0.3,
-                width: size.height*0.3,
+                width: size.height * 0.3,
                 child: Image.file(File(widget.path)),
               ),
             ),
@@ -276,9 +283,8 @@ class _RenderImageState extends State<RenderImage> {
                   padding: EdgeInsets.symmetric(
                       vertical: 15, horizontal: size.width * 0.06),
                   color: Colors.white,
-                  onPressed: ()  {
+                  onPressed: () {
                     Navigator.of(context).pop();
-
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -288,32 +294,37 @@ class _RenderImageState extends State<RenderImage> {
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
                 ),
-                (_isLoading)? CircularProgressIndicator() :FlatButton(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 15, horizontal: size.width * 0.06),
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () async {
-                    if(_markdownText!= null){
-                      Navigator.of(context).pop();
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => Wrap(
-                            children: <Widget>[AddNote(markdownContent: _markdownText,)],
-                          ));
-                    }else{
-                      _convert();
-                    }
-
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Text(
-                    (_markdownText!= null)? 'Next' :'Convert To Text',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+                (_isLoading)
+                    ? CircularProgressIndicator()
+                    : FlatButton(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 15, horizontal: size.width * 0.06),
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () async {
+                          if (_markdownText != null) {
+                            Navigator.of(context).pop();
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => Wrap(
+                                      children: <Widget>[
+                                        AddNote(
+                                          markdownContent: _markdownText,
+                                        )
+                                      ],
+                                    ));
+                          } else {
+                            _convert();
+                          }
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Text(
+                          (_markdownText != null) ? 'Next' : 'Convert To Text',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
               ],
             ),
           ],
@@ -322,4 +333,3 @@ class _RenderImageState extends State<RenderImage> {
     );
   }
 }
-
