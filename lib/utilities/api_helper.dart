@@ -18,7 +18,7 @@ Future<String> renderImageToText(String path) async{
     final Map<String, dynamic> data = {
       'image': 'data:image/png;base64,$img64',
     };
-    final response = await http.post(url, body: json.encode({'image': 'data:image/png;base64,$img64',}), headers: {"Content-Type": "application/json"});
+    final response = await http.post(url, body: json.encode({'image': 'data:image/png;base64,$img64', 'source': 'js'}), headers: {"Content-Type": "application/json"});
 
     if(response.statusCode == 200){
       final responseBody = jsonDecode(response.body);
