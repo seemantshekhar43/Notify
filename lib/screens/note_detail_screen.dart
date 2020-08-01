@@ -38,7 +38,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
       child: Consumer<Note>(
         builder: (context, note, child) => Scaffold(
           appBar: AppBar(
-            title: (_note!= null)?Text(note.title):'',
+            title: (_note!= null)?Text(note.title, textScaleFactor: 1.0,):'',
             actions: <Widget>[
               IconButton(
                 onPressed: () {
@@ -103,6 +103,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                         ),
                         Text(
                           DateFormat.yMMMMd('en_US').add_Hm().format(note.timestamp),
+                          textScaleFactor: 1.0,
                           style: kNoteDateDetailTextStyle,
                         ),
                         Spacer(),
@@ -117,6 +118,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                               Provider.of<Notebooks>(context, listen: false)
                                   .findById(note.notebookId)
                                   .title,
+                              textScaleFactor: 1.0,
                               style: kNoteDetailTitleTextStyle,
                               textAlign: TextAlign.right,
                               maxLines: 1,
@@ -178,6 +180,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                         SizedBox(height: size.width*0.05,),
                         Text(
                           'Saving Changes',
+                          textScaleFactor: 1.0,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -188,9 +191,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                     )),
               ),
             ],
-          ): Center(child: Text('Note Deleted'),),
+          ): Center(child: Text('Note Deleted', textScaleFactor: 1.0,),),
         ),
       ),
-    ): Center(child: Text('Note Deleted'),);
+    ): Center(child: Text('Note Deleted', textScaleFactor: 1.0,),);
   }
 }

@@ -1,8 +1,7 @@
 import 'package:notify/providers/notebook.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
-import 'package:notify/screens/dashboard.dart';
-import 'package:notify/screens/notebooks_list_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:notify/constant.dart';
@@ -35,7 +34,7 @@ class _AddNotebookState extends State<AddNotebook> {
     }
   }
 
-  void _save() async{
+  void _save() async {
     final isValid = _formKey.currentState.validate();
     if (!isValid) return;
     _formKey.currentState.save();
@@ -45,15 +44,14 @@ class _AddNotebookState extends State<AddNotebook> {
 
     if (widget.notebookId != null) {
       final notebook = Notebook(
-          id: widget.notebookId,
-          title: _name,
-          labelId: _labelId,
+        id: widget.notebookId,
+        title: _name,
+        labelId: _labelId,
       );
-     try{
-       await Provider.of<Notebooks>(context, listen: false).updateNotebook(notebook);
-     }catch(error){
-
-     }
+      try {
+        await Provider.of<Notebooks>(context, listen: false)
+            .updateNotebook(notebook);
+      } catch (error) {}
     } else {
       final notebook = Notebook(
         id: DateTime.now().toString(),
@@ -61,34 +59,30 @@ class _AddNotebookState extends State<AddNotebook> {
         labelId: _labelId,
         //date: DateTime.now(),
       );
-     await Provider.of<Notebooks>(context, listen: false).addNotebook(notebook);
+      await Provider.of<Notebooks>(context, listen: false)
+          .addNotebook(notebook);
       Navigator.pop(context);
     }
 
     setState(() {
       _isLoadingSave = false;
     });
-
   }
 
-  void _delete() async{
+  void _delete() async {
     setState(() {
       _isLoadingDelete = true;
     });
-    try{
-      await Provider.of<Notes>(context, listen: false).deleteNotesByNotebookId(widget.notebookId);
-      await Provider.of<Notebooks>(context, listen: false).deleteNotebook(widget.notebookId);
+    try {
+      await Provider.of<Notes>(context, listen: false)
+          .deleteNotesByNotebookId(widget.notebookId);
+      await Provider.of<Notebooks>(context, listen: false)
+          .deleteNotebook(widget.notebookId);
 
 //      Navigator.pop(context);
-      Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
-
-    }catch(error){
-
-    }
-
-
-
-
+      Navigator.popUntil(
+          context, ModalRoute.withName(Navigator.defaultRouteName));
+    } catch (error) {}
   }
 
   @override
@@ -111,7 +105,10 @@ class _AddNotebookState extends State<AddNotebook> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    (widget.notebookId!= null)? 'Edit Notebook' : 'Add New Notebook',
+                    (widget.notebookId != null)
+                        ? 'Edit Notebook'
+                        : 'Add New Notebook',
+                    textScaleFactor: 1.0,
                     style:
                         TextStyle(fontWeight: FontWeight.w500, fontSize: 22.0),
                   ),
@@ -137,6 +134,7 @@ class _AddNotebookState extends State<AddNotebook> {
                   ),
                   Text(
                     'Cover Color',
+                    textScaleFactor: 1.0,
                     style: kLabelTextStyle,
                   ),
                   SizedBox(
@@ -178,80 +176,88 @@ class _AddNotebookState extends State<AddNotebook> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      if(widget.notebookId!= null)(_isLoadingDelete)
-                          ? CircularProgressIndicator()
-                          : FlatButton(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 15, horizontal: size.width * 0.06),
-                        color: Theme.of(context).errorColor,
-                        onPressed: () async{
-                          final response = await showDialog(context: context,
-                          builder: (context) => AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            title: Text(
-                              'Delete Notebook'
-                            ),
-                            content: Text(
-                              'All notes of this notebook will be deleted, are you sure you want to delete?'
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text(
-                                  'Cancel'
-                                ),
-                                onPressed: (){
-                                  Navigator.pop(context, false);
+                      if (widget.notebookId != null)
+                        (_isLoadingDelete)
+                            ? SpinKitPulse(
+                                color: Theme.of(context).errorColor,
+                              )
+                            : FlatButton(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 15,
+                                    horizontal: size.width * 0.06),
+                                color: Theme.of(context).errorColor,
+                                onPressed: () async {
+                                  final response = await showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            title: Text(
+                                              'Delete Notebook',
+                                              textScaleFactor: 1.0,
+                                            ),
+                                            content: Text(
+                                              'All notes of this notebook will be deleted, are you sure you want to delete?',
+                                              textScaleFactor: 1.0,
+                                            ),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: Text(
+                                                  'Cancel',
+                                                  textScaleFactor: 1.0,
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.pop(context, false);
+                                                },
+                                              ),
+                                              FlatButton(
+                                                child: Text(
+                                                  'Yes',
+                                                  textScaleFactor: 1.0,
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.pop(context, true);
+                                                },
+                                              ),
+                                            ],
+                                          ));
+                                  if (response) {
+                                    _delete();
+                                  }
                                 },
-                              ),
-                              FlatButton(
-                                child: Text(
-                                    'Yes'
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                onPressed: (){
-                                  Navigator.pop(context, true);
-                                },
+                                child: Text(
+                                  'Delete',
+                                  textScaleFactor: 1.0,
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                            ],
-                          ));
-                          if(response){
-                            _delete();
-
-
-
-                          }
-
-
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
                       (_isLoadingSave)
-                          ? CircularProgressIndicator()
+                          ? SpinKitThreeBounce(
+                              color: Theme.of(context).primaryColor,
+                            )
                           : FlatButton(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 15, horizontal: size.width * 0.06),
-                        color: Theme.of(context).primaryColor,
-                        onPressed: () {
-                          _save();
-
-
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Text(
-                          (widget.notebookId != null)? 'Update':'Add Notebook',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: size.width * 0.06),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                _save();
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Text(
+                                (widget.notebookId != null)
+                                    ? 'Update'
+                                    : 'Add Notebook',
+                                textScaleFactor: 1.0,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
                     ],
                   )
                 ],

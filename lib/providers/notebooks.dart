@@ -44,7 +44,7 @@ class Notebooks extends ChangeNotifier {
           title: notebook.title,
           labelId: notebook.labelId,
         );
-        _list.add(retrievedNotebook);
+        _list.insert(0,retrievedNotebook);
         print('notebook id: ${retrievedNotebook.id}');
         notifyListeners();
       }

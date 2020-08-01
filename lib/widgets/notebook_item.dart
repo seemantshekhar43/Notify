@@ -18,7 +18,7 @@ class NotebookItem extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: size.width*0.02, vertical: size.height*0.02),
         height: size.height*0.16,
-        width: size.width*0.4,
+        width: size.width*0.36,
         decoration: BoxDecoration(
           color: kLabelColorMap[notebook.labelId],
           borderRadius: BorderRadius.circular(20.0),
@@ -29,7 +29,7 @@ class NotebookItem extends StatelessWidget {
         alignment: Alignment.center,
         child: Padding(
           padding:  EdgeInsets.all(size.width *0.04),
-          child: Text(notebook.title, style: kNotebookCardTitleTextStyle,),
+          child: Text(notebook.title, textScaleFactor: 1.0,style: kNotebookCardTitleTextStyle,),
         ),
 
       ),

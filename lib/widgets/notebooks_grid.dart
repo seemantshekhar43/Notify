@@ -35,6 +35,7 @@ class NotebooksGrid extends StatelessWidget {
 
           Text(
             'Add Notebook',
+            textScaleFactor: 1.0,
             style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: Colors.black54,

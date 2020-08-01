@@ -3,7 +3,7 @@ import 'package:notify/firebase/auth_exception_handler.dart';
 import 'package:notify/firebase/auth_helper.dart';
 import 'package:notify/widgets/already_have_an_account.dart';
 import 'package:notify/widgets/rounded_button.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,8 +18,10 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = DeviceSize(context: context);
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+
         child: SignupForm(),
       ),
     );
@@ -34,8 +36,9 @@ class SignupForm extends StatefulWidget {
 class _SignupFormState extends State<SignupForm> {
   bool _isLoading = false;
   bool _isPasswordHidden = true;
-  var _email;
-  var _password;
+  String _email;
+  String _password;
+  String _username;
   final _formKey = GlobalKey<FormState>();
 
   void _showSnackBar(String message) {
@@ -82,7 +85,7 @@ class _SignupFormState extends State<SignupForm> {
 //    }
 
     final status = await FirebaseAuthHelper().
-        createAccount(email: _email, pass: _password);
+        createAccount(email: _email.trim(), pass: _password.trim());
     if (status == AuthResultStatus.successful) {
       // Navigate to success page
 
@@ -90,6 +93,12 @@ class _SignupFormState extends State<SignupForm> {
 
       try {
         await user.sendEmailVerification();
+        final UserUpdateInfo userUpdateInfo = UserUpdateInfo();
+        userUpdateInfo.displayName = _username;
+        await user.updateProfile(userUpdateInfo);
+        setState(() {
+          _isLoading = false;
+        });
         FirebaseAuthHelper().logout();
         await showDialog(
             context: context,
@@ -97,12 +106,12 @@ class _SignupFormState extends State<SignupForm> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  title: Text('Verification Email'),
+                  title: Text('Verification Email', textScaleFactor: 1.0,),
                   content: Text(
-                      'Verification email sent to $_email, please verify your email to login.'),
+                      'Verification email sent to $_email, please verify your email to login.', textScaleFactor: 1.0,),
                   actions: <Widget>[
                     FlatButton(
-                      child: Text('Ok'),
+                      child: Text('Ok', textScaleFactor: 1.0,),
                       onPressed: () {
                         Navigator.pop(
                           context,
@@ -134,12 +143,51 @@ class _SignupFormState extends State<SignupForm> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          Hero(
+            tag: 'logo',
+            child: Container(
+              height: 100.0,
+              child: Image.asset('assets/images/icon_blue.png'),
+            ),
+          ),
+          SizedBox(
+            height: size.height*0.08,
+          ),
+          TextFormField(
+            keyboardType: TextInputType.text,
+            cursorColor: kPrimaryColor,
+            decoration: InputDecoration(
+                prefixIcon: Icon(
+                  Icons.person,
+                  color: kPrimaryColor,
+                ),
+                border: OutlineInputBorder(
+                  // width: 0.0 produces a thin "hairline" border
+                  borderRadius: BorderRadius.all(Radius.circular(90.0)),
+                  borderSide: BorderSide.none,
+                  //borderSide: const BorderSide(),
+                ),
+                filled: true,
+                fillColor: kPrimaryLightColor,
+                hintText: 'Enter username'),
+            onChanged: (val) {
+              _username = val;
+            },
+            validator: (value) {
+              if (value.isEmpty)
+                return 'Enter your username';
+              return null;
+            },
+          ),
+          SizedBox(
+            height: size.height * 0.03,
+          ),
           TextFormField(
             keyboardType: TextInputType.emailAddress,
             cursorColor: kPrimaryColor,
             decoration: InputDecoration(
                 prefixIcon: Icon(
-                  Icons.person,
+                  Icons.email,
                   color: kPrimaryColor,
                 ),
                 border: OutlineInputBorder(
@@ -207,7 +255,9 @@ class _SignupFormState extends State<SignupForm> {
             height: size.height * 0.01,
           ),
           (_isLoading)
-              ? CircularProgressIndicator()
+              ? SpinKitChasingDots(
+            color: Theme.of(context).primaryColor,
+          )
               : RoundedButton(
                   text: 'SIGN UP',
                   press: () {

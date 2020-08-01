@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notify/firebase/auth_exception_handler.dart';
 import 'package:notify/firebase/auth_helper.dart';
@@ -8,7 +8,6 @@ import 'package:notify/widgets/already_have_an_account.dart';
 import 'package:notify/widgets/rounded_button.dart';
 
 import 'package:provider/provider.dart';
-
 
 import '../../constant.dart';
 
@@ -35,8 +34,8 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool _isLoading = false;
   bool _isPasswordHidden = true;
-  var _email;
-  var _password;
+  String _email;
+  String _password;
   final _formKey = GlobalKey<FormState>();
 
   void _showSnackBar(String message) {
@@ -79,61 +78,66 @@ class _LoginFormState extends State<LoginForm> {
 //      _showSnackBar(errorMessage);
 //    }
 
-    final status = await FirebaseAuthHelper().login(
-        email: _email, pass: _password);
+    final status = await FirebaseAuthHelper()
+        .login(email: _email.trim(), pass: _password.trim());
     if (status == AuthResultStatus.successful) {
       FirebaseUser user = await FirebaseAuth.instance.currentUser();
-      if (!user.isEmailVerified){
+      if (!user.isEmailVerified) {
         FirebaseAuthHelper().logout();
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text(
             'Verify your email',
+            textScaleFactor: 1.0,
           ),
           action: SnackBarAction(
             label: 'Resend mail',
-            onPressed: () async{
-              try{
+            onPressed: () async {
+              try {
                 await user.sendEmailVerification();
                 await showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      title: Text('Verification Email'),
-                      content: Text(
-                          'Verification email sent to $_email, please verify your email to login.'),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: Text('Ok'),
-                          onPressed: () {
-                            Navigator.pop(
-                              context,
-                            );
-                          },
-                        ),
-                      ],
-                    ));
-              }
-              catch(e){
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          title: Text(
+                            'Verification Email',
+                            textScaleFactor: 1.0,
+                          ),
+                          content: Text(
+                            'Verification email sent to $_email, please verify your email to login.',
+                            textScaleFactor: 1.0,
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text(
+                                'Ok',
+                                textScaleFactor: 1.0,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(
+                                  context,
+                                );
+                              },
+                            ),
+                          ],
+                        ));
+              } catch (e) {
                 _showSnackBar('Error sending Verification mail');
               }
-
             },
           ),
         ));
-      }
-      else{
+      } else {
         Navigator.pop(context);
       }
       // Navigate to success page
     } else {
-      final errorMsg = AuthExceptionHandler.generateExceptionMessage(
-          status);
+      final errorMsg = AuthExceptionHandler.generateExceptionMessage(status);
       _showSnackBar(errorMsg);
     }
     setState(() {
-      _isLoading =false;
+      _isLoading = false;
     });
   }
 
@@ -146,6 +150,16 @@ class _LoginFormState extends State<LoginForm> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          Hero(
+            tag: 'logo',
+            child: Container(
+              height: 100.0,
+              child: Image.asset('assets/images/icon_blue.png'),
+            ),
+          ),
+          SizedBox(
+            height: size.height*0.08,
+          ),
           TextFormField(
             keyboardType: TextInputType.emailAddress,
             cursorColor: kPrimaryColor,
@@ -218,12 +232,16 @@ class _LoginFormState extends State<LoginForm> {
           SizedBox(
             height: size.height * 0.01,
           ),
-          (_isLoading)? CircularProgressIndicator(): RoundedButton(
-            text: 'LOG IN',
-            press: () {
-              _login();
-            },
-          ),
+          (_isLoading)
+              ? SpinKitChasingDots(
+                  color: Theme.of(context).primaryColor,
+                )
+              : RoundedButton(
+                  text: 'LOG IN',
+                  press: () {
+                    _login();
+                  },
+                ),
           SizedBox(
             height: size.height * 0.03,
           ),

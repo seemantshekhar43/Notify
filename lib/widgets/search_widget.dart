@@ -43,6 +43,7 @@ class SearchNotes extends SearchDelegate<NoteItem> {
 
     return (notes.length<1)? Center(child: Text(
       'Nothing to display!! Add one!!',
+      textScaleFactor: 1.0,
       style: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 18.0
@@ -79,6 +80,7 @@ class SearchNotes extends SearchDelegate<NoteItem> {
 
     return (notes.length<1)? Center(child: Text(
       'Nothing to display!! Add one!!',
+      textScaleFactor: 1.0,
       style: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 18.0

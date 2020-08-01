@@ -44,9 +44,9 @@ class FirebaseAuthHelper  {
     return _status;
   }
 
-  logout() async {
-    final _auth = FirebaseAuth.instance;
-
+  logout() {
+    final _auth =  FirebaseAuth.instance;
+    _auth.signOut();
     // notifyListeners();
   }
 }

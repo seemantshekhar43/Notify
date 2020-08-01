@@ -6,14 +6,47 @@ import 'package:notify/providers/notes.dart';
 import 'package:notify/screens/note_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flushbar/flushbar.dart';
 
-class NoteItem extends StatelessWidget {
+class NoteItem extends StatefulWidget {
+
+  final String markdown;
+
+  NoteItem({this.markdown:''});
+
+  @override
+  _NoteItemState createState() => _NoteItemState();
+}
+
+class _NoteItemState extends State<NoteItem> {
+
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     final size = DeviceSize(context: context);
     final note = Provider.of<Note>(context, listen: true);
     return GestureDetector(
-      onTap: () {
+      onTap: () async{
+        if(widget.markdown.isNotEmpty){
+          setState(() {
+            _isLoading = true;
+          });
+          try{
+            String updated = '${note.body}<br><p>${widget.markdown}</p>';
+            await note.updateContent(updated);
+          }catch(error){
+            Flushbar(
+              message: 'Unable to save data.',
+              duration: Duration(seconds: 3),
+            )..show(context);
+          }
+          setState(() {
+            _isLoading =false;
+          });
+          Navigator.popAndPushNamed(context, NoteDetailScreen.routeName,
+              arguments: note.id);
+        }else
         Navigator.pushNamed(context, NoteDetailScreen.routeName,
             arguments: note.id);
       },
@@ -44,18 +77,18 @@ class NoteItem extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    title: Text('Delete ${note.title}'),
+                    title: Text('Delete ${note.title}', textScaleFactor: 1.0,),
                     content: Text(
-                        'Note will be permanently deleted, are you sure you want to delete?'),
+                        'Note will be permanently deleted, are you sure you want to delete?', textScaleFactor: 1.0,),
                     actions: <Widget>[
                       FlatButton(
-                        child: Text('Cancel'),
+                        child: Text('Cancel', textScaleFactor: 1.0,),
                         onPressed: () {
                           Navigator.pop(context, false);
                         },
                       ),
                       FlatButton(
-                        child: Text('Yes'),
+                        child: Text('Yes', textScaleFactor: 1.0,),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
@@ -96,13 +129,17 @@ class NoteItem extends StatelessWidget {
                     SizedBox(
                       width: size.width * 0.02,
                     ),
-                    Text(
+                    (_isLoading)? SpinKitThreeBounce(
+                      color: Theme.of(context).primaryColor,
+                    ):Text(
                       note.title,
+                      textScaleFactor: 1.0,
                       style: kNoteTitleTextStyle,
                     ),
                     Spacer(),
                     Text(
                       DateFormat('dd/MM/yy').format(note.timestamp),
+                      textScaleFactor: 1.0,
                       style: kNoteDateTextStyle,
                     ),
                   ],
@@ -126,6 +163,7 @@ class NoteItem extends StatelessWidget {
       ),
     );
   }
+
   Widget customChip(String label){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -137,6 +175,7 @@ class NoteItem extends StatelessWidget {
       ),
       child: Text(
         label,
+        textScaleFactor: 1.0,
         style: TextStyle(
           color: Colors.white,
           fontSize: 12.0,

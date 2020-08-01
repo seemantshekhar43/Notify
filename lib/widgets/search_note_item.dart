@@ -49,11 +49,14 @@ class SearchNoteItem extends StatelessWidget {
                   ),
                   Text(
                     note.title,
+
+                    textScaleFactor: 1.0,
                     style: kNoteTitleTextStyle,
                   ),
                   Spacer(),
                   Text(
                     DateFormat('dd/MM/yy').format(note.timestamp),
+                    textScaleFactor: 1.0,
                     style: kNoteDateTextStyle,
                   ),
                 ],
@@ -87,6 +90,7 @@ class SearchNoteItem extends StatelessWidget {
       ),
       child: Text(
         label,
+        textScaleFactor: 1.0,
         style: TextStyle(
           color: Colors.white,
           fontSize: 12.0,

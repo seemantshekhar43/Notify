@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
+import 'package:notify/screens/add_image_text_screen.dart';
 import 'package:notify/screens/authentication/login_screen.dart';
 import 'package:notify/screens/authentication/signup_screen.dart';
 import 'package:notify/screens/authentication/splash_screen.dart';
@@ -13,6 +14,7 @@ import 'package:notify/screens/note_detail_screen.dart';
 import 'package:notify/screens/notebook_screen.dart';
 import 'package:notify/screens/notebooks_list_screen.dart';
 import 'package:notify/screens/notes_list_screen.dart';
+import 'package:notify/utilities/version_manager.dart';
 import 'package:provider/provider.dart';
 
 import 'constant.dart';
@@ -29,6 +31,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (context) => VersionManager(version: Version.version_1),
+        ),
+        ChangeNotifierProvider(
           create: (context) => Notebooks(),
         ),
         ChangeNotifierProvider(
@@ -41,12 +46,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home:  StreamBuilder(
             stream: FirebaseAuth.instance.onAuthStateChanged,
-            builder: (context, userSnapshot) {
+            builder: (context, AsyncSnapshot<FirebaseUser> userSnapshot){
               if(userSnapshot.connectionState == ConnectionState.waiting)
                 return SplashScreen();
-              if (userSnapshot.hasData) {
+              if (userSnapshot.hasData && userSnapshot.data.isEmailVerified) {
                 return Dashboard();
-              } else
+              }
                 return WelcomeScreen();
             }),
         routes: {
@@ -59,6 +64,7 @@ class MyApp extends StatelessWidget {
           LoginScreen.routeName: (context) => LoginScreen(),
           SplashScreen.routeName: (context) => SplashScreen(),
           Dashboard.routeName:(context) => Dashboard(),
+          AddImageTextScreen.routeName:(context) => AddImageTextScreen(),
 
         },
       ),

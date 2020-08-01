@@ -12,7 +12,7 @@ class NotebooksListScreen extends StatelessWidget {
     final size = DeviceSize(context: context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notebooks'),
+        title: Text('Notebooks',textScaleFactor: 1.0,),
       ),
       floatingActionButton: SpeedDial(
         child: Icon(Icons.add),

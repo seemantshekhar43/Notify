@@ -7,14 +7,15 @@ import 'package:provider/provider.dart';
 
 class NotesList extends StatelessWidget {
   final notebookId;
+  final String markdown;
 
-  NotesList({this.notebookId});
+  NotesList({this.notebookId, this.markdown:''});
   @override
   Widget build(BuildContext context) {
     final size = DeviceSize(context: context);
     final notesData = Provider.of<Notes>(context);
     final notes = (notebookId != null) ? notesData.getListByNotebookId(notebookId) :  notesData.list;
-
+  print('notes list length is: ${notes.length}');
     return (notes.length<1)? Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -34,6 +35,7 @@ class NotesList extends StatelessWidget {
 
           Text(
             'Add First note',
+            textScaleFactor: 1.0,
             style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: Colors.black54,
@@ -47,7 +49,7 @@ class NotesList extends StatelessWidget {
       itemBuilder: (context, i) {
         return ChangeNotifierProvider.value(
           value: notes[i],
-          child: NoteItem(),
+          child: NoteItem(markdown: markdown,),
         );
       },
     );

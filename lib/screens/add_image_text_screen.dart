@@ -7,26 +7,28 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:notify/widgets/search_widget.dart';
 import 'package:provider/provider.dart';
 
-class NotesListScreen extends StatelessWidget {
-  static const routeName = '/notes-list-screen';
+class AddImageTextScreen extends StatelessWidget {
+  static const routeName = '/add-image-text-screen';
 
   @override
   Widget build(BuildContext context) {
+    String markdown = ModalRoute.of(context).settings.arguments as String;
+    print('markdown is: $markdown');
     final size = DeviceSize(context: context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Notes',
+          'Add to note',
           textScaleFactor: 1.0,
         ),
-        actions: <Widget>[
-          if(Provider.of<VersionManager>(context, listen:false).version == Version.version_2)IconButton(
-            icon: Icon(Icons.search),
-            onPressed: (){
-              showSearch(context: context, delegate: SearchNotes());
-            },
-          ),
-        ],
+//        actions: <Widget>[
+//          if(Provider.of<VersionManager>(context, listen:false).version == Version.version_2)IconButton(
+//            icon: Icon(Icons.search),
+//            onPressed: (){
+//              showSearch(context: context, delegate: SearchNotes());
+//            },
+//          ),
+//        ],
       ),
       floatingActionButton: SpeedDial(
         child: Icon(Icons.add),
@@ -38,14 +40,14 @@ class NotesListScreen extends StatelessWidget {
                 context: context,
                 isScrollControlled: true,
                 builder: (context) => Wrap(children: <Widget>[
-                  AddNote()
+                  AddNote(markdownContent: markdown,)
                 ],));
           }),
         ],
       ),
       body: Padding(
         padding: EdgeInsets.all(size.width*0.02),
-        child: NotesList(),
+        child: NotesList(markdown: markdown,),
       ),
 
     );

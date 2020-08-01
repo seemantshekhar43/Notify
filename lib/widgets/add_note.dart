@@ -3,8 +3,9 @@ import 'package:notify/constant.dart';
 import 'package:notify/providers/note.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
-import 'package:notify/screens/new_note_detail.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:notify/screens/note_detail_screen.dart';
+import 'package:notify/utilities/version_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
 
@@ -14,6 +15,7 @@ class AddNote extends StatefulWidget {
   final noteId;
   final currentNotebookId;
   final markdownContent;
+
   AddNote(
       {this.noteId,
       this.currentNotebookId,
@@ -25,6 +27,7 @@ class AddNote extends StatefulWidget {
 class _AddNoteState extends State<AddNote> {
   bool _isLoading = false;
   bool _isLoadingDelete = false;
+  final _tagController = TextEditingController();
   bool _isSaved = false;
   var _title = '';
   var _notebookId = '';
@@ -142,6 +145,7 @@ class _AddNoteState extends State<AddNote> {
                 children: <Widget>[
                   Text(
                     (widget.noteId != null) ? 'Edit note' : 'Add New Note',
+                    textScaleFactor: 1.0,
                     style:
                         TextStyle(fontWeight: FontWeight.w500, fontSize: 22.0),
                   ),
@@ -165,13 +169,18 @@ class _AddNoteState extends State<AddNote> {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
-                  TextFormField(
+                  if(Provider.of<VersionManager>(context, listen:false).version == Version.version_2)TextFormField(
                     keyboardType: TextInputType.text,
+                    controller: _tagController,
                     onFieldSubmitted: (value) {
                       setState(() {
                         if (value.trim().isNotEmpty &&
-                            !_tags.contains(value.trim()))
+                            !_tags.contains(value.trim())){
                           _tags.insert(0, value.trim());
+                          _tagController.clear();
+
+                        }
+
                       });
                     },
                     textAlign: TextAlign.center,
@@ -184,7 +193,7 @@ class _AddNoteState extends State<AddNote> {
                     decoration: InputDecoration(
                         labelText: 'Tag', hintText: 'Add Tags...'),
                   ),
-                  SizedBox(
+                  if(Provider.of<VersionManager>(context, listen:false).version == Version.version_2)SizedBox(
                     height: size.height * 0.01,
                   ),
                   if (_tags.length > 0)
@@ -195,20 +204,25 @@ class _AddNoteState extends State<AddNote> {
                         scrollDirection: Axis.horizontal,
                         itemCount: _tags.length,
                         itemBuilder: (context, i) {
-                          return Chip(
-                            label: Text(
-                              _tags[i],
+                          return Padding(
+
+                            padding: const EdgeInsets.symmetric(horizontal:4.0),
+                            child: Chip(
+                              label: Text(
+                                _tags[i],
+                                textScaleFactor: 1.0,
+                              ),
+                              labelStyle: TextStyle(
+                                color: Colors.white,
+                              ),
+                              backgroundColor: Colors.black54,
+                              deleteIcon: Icon(Icons.cancel),
+                              onDeleted: () {
+                                setState(() {
+                                  _tags.removeAt(i);
+                                });
+                              },
                             ),
-                            labelStyle: TextStyle(
-                              color: Colors.white,
-                            ),
-                            backgroundColor: Colors.black54,
-                            deleteIcon: Icon(Icons.cancel),
-                            onDeleted: () {
-                              setState(() {
-                                _tags.removeAt(i);
-                              });
-                            },
                           );
                         },
                       ),
@@ -218,6 +232,7 @@ class _AddNoteState extends State<AddNote> {
                   ),
                   Text(
                     'Choose Notebook',
+                    textScaleFactor: 1.0,
                     style: kLabelTextStyle,
                   ),
                   SizedBox(
@@ -246,6 +261,7 @@ class _AddNoteState extends State<AddNote> {
 
                                 Text(
                                   'Add notebook first',
+                                  textScaleFactor: 1.0,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       color: Colors.black54,
@@ -291,6 +307,7 @@ class _AddNoteState extends State<AddNote> {
                                               EdgeInsets.all(size.width * 0.04),
                                           child: Text(
                                             notebooks[i].title,
+                                            textScaleFactor: 1.0,
                                             style: kNotebookCardTitleTextStyle,
                                           ),
                                         ),
@@ -318,7 +335,9 @@ class _AddNoteState extends State<AddNote> {
                     children: <Widget>[
                       if (widget.noteId != null)
                         (_isLoadingDelete)
-                            ? CircularProgressIndicator()
+                            ?  SpinKitPulse(
+                    color: Theme.of(context).errorColor,
+                  )
                             : FlatButton(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 15,
@@ -332,18 +351,18 @@ class _AddNoteState extends State<AddNote> {
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
                                             ),
-                                            title: Text('Delete Note'),
+                                            title: Text('Delete Note', textScaleFactor: 1.0,),
                                             content: Text(
-                                                '$_title will be deleted, are you sure you want to delete?'),
+                                                '$_title will be deleted, are you sure you want to delete?', textScaleFactor: 1.0,),
                                             actions: <Widget>[
                                               FlatButton(
-                                                child: Text('Cancel'),
+                                                child: Text('Cancel', textScaleFactor: 1.0,),
                                                 onPressed: () {
                                                   Navigator.pop(context, false);
                                                 },
                                               ),
                                               FlatButton(
-                                                child: Text('Yes'),
+                                                child: Text('Yes', textScaleFactor: 1.0,),
                                                 onPressed: () {
                                                   Navigator.pop(context, true);
                                                 },
@@ -359,11 +378,14 @@ class _AddNoteState extends State<AddNote> {
                                 ),
                                 child: Text(
                                   'Delete',
+                                  textScaleFactor: 1.0,
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
                       (_isLoading)
-                          ? CircularProgressIndicator()
+                          ? SpinKitThreeBounce(
+                        color: Theme.of(context).primaryColor,
+                      )
                           : FlatButton(
                               padding: EdgeInsets.symmetric(
                                   vertical: 15, horizontal: size.width * 0.06),
@@ -381,6 +403,7 @@ class _AddNoteState extends State<AddNote> {
                               ),
                               child: Text(
                                 (widget.noteId != null) ? 'Save' : 'Add Note',
+                                textScaleFactor: 1.0,
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),

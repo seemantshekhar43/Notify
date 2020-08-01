@@ -22,6 +22,7 @@ class NotebookScreen extends StatelessWidget {
         backgroundColor: (notebook!= null)?kLabelColorMap[notebook.labelId]:Colors.red,
         title: Text(
           (notebook!= null)?notebook.title:'',
+          textScaleFactor: 1.0,
         ),
         actions: <Widget>[
           IconButton(
@@ -55,7 +56,7 @@ class NotebookScreen extends StatelessWidget {
       body: (notebook!= null)? Padding(
         padding: EdgeInsets.all(size.width*0.02),
         child: NotesList(notebookId: notebook.id,),
-      ):Center(child: Text('Notebook Deleted'),),
+      ):Center(child: Text('Notebook Deleted', textScaleFactor: 1.0,),),
     );
   }
 }

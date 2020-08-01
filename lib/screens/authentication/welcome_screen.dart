@@ -18,18 +18,32 @@ class WelcomeScreen extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width*0.1),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TypewriterAnimatedTextKit(
-              speed: Duration(milliseconds: 500),
-              pause: Duration(milliseconds:  500),
-              text: ['notify'],
-              totalRepeatCount: 4,
-              textStyle: TextStyle(
-                fontSize: 45.0,
-                fontWeight: FontWeight.w900,
-              ),
+            Row(
+
+              children: <Widget>[
+                SizedBox(width: size.width*0.1,),
+                Hero(
+                  tag: 'logo',
+                  child: Container(
+                    child: Image.asset('assets/images/icon_blue.png'),
+                    height: 40.0,
+                  ),
+                ),
+                SizedBox(width: size.width*0.04,),
+                TypewriterAnimatedTextKit(
+                  speed: Duration(milliseconds: 500),
+                  pause: Duration(milliseconds:  500),
+                  text: ['Notify'],
+                  totalRepeatCount: 4,
+                  textStyle: TextStyle(
+                    fontSize: 45.0,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: size.height *0.05,),
             RoundedButton(

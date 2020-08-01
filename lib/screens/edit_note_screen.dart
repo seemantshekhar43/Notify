@@ -17,12 +17,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _note.title
+          _note.title,
+          textScaleFactor: 1.0,
         ),
       ),
       body: Center(
         child: Text(
-          _note.tags.length.toString()
+          _note.tags.length.toString(),
+          textScaleFactor: 1.0,
         ),
       ),
     );
