@@ -7,9 +7,20 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:notify/widgets/search_widget.dart';
 import 'package:provider/provider.dart';
 
-class NotesListScreen extends StatelessWidget {
+enum FilterOption{
+  all,
+  bookmark
+}
+class NotesListScreen extends StatefulWidget {
   static const routeName = '/notes-list-screen';
 
+  @override
+  _NotesListScreenState createState() => _NotesListScreenState();
+}
+
+class _NotesListScreenState extends State<NotesListScreen> {
+
+  bool _showBookmark = false;
   @override
   Widget build(BuildContext context) {
     final size = DeviceSize(context: context);
@@ -25,6 +36,30 @@ class NotesListScreen extends StatelessWidget {
             onPressed: (){
               showSearch(context: context, delegate: SearchNotes());
             },
+          ),
+          PopupMenuButton(
+            onSelected: (FilterOption option){
+              setState(() {
+
+                if(option == FilterOption.bookmark)
+                  _showBookmark = true;
+                else
+                  _showBookmark = false;
+              });
+            },
+            icon: Icon(
+                Icons.more_vert
+            ),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                child: Text('Bookmark'),
+                value: FilterOption.bookmark,
+              ),
+              PopupMenuItem(
+                child: Text('All Notes'),
+                value: FilterOption.all,
+              ),
+            ],
           ),
         ],
       ),
@@ -45,7 +80,7 @@ class NotesListScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.all(size.width*0.02),
-        child: NotesList(),
+        child: NotesList(showBookmark: _showBookmark,),
       ),
 
     );

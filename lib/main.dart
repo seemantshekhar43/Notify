@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => VersionManager(version: Version.version_1),
+          create: (context) => VersionManager(version: Version.version_2),
         ),
         ChangeNotifierProvider(
           create: (context) => Notebooks(),

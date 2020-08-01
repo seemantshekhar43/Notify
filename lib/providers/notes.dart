@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'note.dart';
 
 class Notes extends ChangeNotifier {
+  bool initialFetch = false;
   List<Note> _list = [
 //    Note(
 //        id: '1a',
@@ -94,6 +95,7 @@ class Notes extends ChangeNotifier {
         timestamp: date,
         body: n.body,
         notebookId: n.notebookId,
+        bookmark: false,
         tags: n.tags);
 
     final user = await FirebaseAuth.instance.currentUser();
@@ -103,6 +105,7 @@ class Notes extends ChangeNotifier {
         'title': note.title,
         'timestamp': FieldValue.serverTimestamp(),
         'body': note.body,
+        'bookmark':false,
         'notebookID': note.notebookId,
         'tags': note.tags.toList(),
       };
@@ -186,6 +189,7 @@ class Notes extends ChangeNotifier {
               title: document['title'],
               timestamp: document['timestamp'].toDate(),
               body: document['body'],
+              bookmark: document['bookmark']??false,
               notebookId: document['notebookID'],
               tags: List.from(document['tags']),
             );
@@ -194,6 +198,8 @@ class Notes extends ChangeNotifier {
           });
           unSortedList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
           _list.addAll(unSortedList);
+          initialFetch = true;
+          notifyListeners();
         }
       } catch (error) {
         throw error;

@@ -9,7 +9,7 @@ class Note extends ChangeNotifier {
    String body;
    String notebookId;
    DateTime timestamp;
-  bool isStarred;
+   bool bookmark;
 
   Note(
       {@required this.id,
@@ -18,15 +18,32 @@ class Note extends ChangeNotifier {
       @required this.notebookId,
       @required this.timestamp,
        @required this.body,
-      this.isStarred = false}){
+      this.bookmark = false}){
    if(tags == null){
      tags = List<String>();
    }
   }
 
-  void toggleStarStatus(){
-    isStarred = !isStarred;
+  Future<void> toggleBookmark() async{
+    print('toggle called');
+    this.bookmark = !this.bookmark;
     notifyListeners();
+    final user = await FirebaseAuth.instance.currentUser();
+    final firestoreInstance = Firestore.instance;
+    try {
+      Map<String, dynamic> data = {
+        'bookmark': this.bookmark,
+      };
+      await firestoreInstance.collection('notes').document(user.uid).collection('user_notes').document(this.id).updateData(data).then((_) {
+
+      });
+    }catch(error){
+      this.bookmark = !this.bookmark;
+      notifyListeners();
+      throw error;
+    }
+
+
   }
 
   Future<void> updateContent(String content) async{
