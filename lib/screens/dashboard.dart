@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:image_editor_pro/image_editor_pro.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:notify/screens/add_image_text_screen.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -367,6 +368,8 @@ class RenderImage extends StatefulWidget {
 class _RenderImageState extends State<RenderImage> {
   String _markdownText;
   bool _isLoading = false;
+  File _image;
+  String path;
 
   _convert() async {
     //convert image to text
@@ -409,6 +412,43 @@ class _RenderImageState extends State<RenderImage> {
   }
 
   @override
+  void initState() {
+    path = widget.path;
+    _image = File(path);
+    super.initState();
+  }
+
+
+  Future<void> getimageditor() async{
+    var decodedImage = await decodeImageFromList(_image.readAsBytesSync());
+    final width = decodedImage.width;
+    final height =decodedImage.height;
+
+    final geteditimage =
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ImageEditorPro(
+        appBarColor: Colors.blue,
+        bottomBarColor: Colors.blue,
+        image: _image,
+        iWidth: width,
+        iHeight: height,
+      );
+    })).then((geteditimage) {
+      if (geteditimage != null) {
+        setState(() {
+          _image = geteditimage;
+          path = _image.path;
+        });
+      }
+    }).catchError((er) {
+      print(er);
+    });
+  }
+
+
+
+
+  @override
   Widget build(BuildContext context) {
     final size = DeviceSize(context: context);
     return Dialog(
@@ -423,17 +463,26 @@ class _RenderImageState extends State<RenderImage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'Convert To Text Note',
-              textScaleFactor: 1.0,
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+            Row(
+              children: <Widget>[
+                Text(
+                  'Convert To Text Note',
+                  textScaleFactor: 1.0,
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+                ),
+                IconButton(icon: Icon(Icons.brush),
+                onPressed: (){
+
+                  getimageditor();
+                },)
+              ],
             ),
             SizedBox(height: size.height * 0.03),
             Center(
               child: Container(
                 height: size.height * 0.3,
                 width: size.height * 0.3,
-                child: Image.file(File(widget.path)),
+                child: Image.file(File(path)),
               ),
             ),
             Spacer(),
@@ -467,7 +516,7 @@ class _RenderImageState extends State<RenderImage> {
                             vertical: 15, horizontal: size.width * 0.06),
                         color: Theme.of(context).primaryColor,
                         onPressed: () {
-                          final bytes = File(widget.path).readAsBytesSync();
+                          final bytes = File(path).readAsBytesSync();
                           String img64 = base64Encode(bytes);
                           _markdownText =
                               '<img width="100%" src="data:image/png;base64, $img64">';
@@ -542,7 +591,7 @@ class _RenderImageState extends State<RenderImage> {
                             : () async {
                                 if (_markdownText == null) {
                                   final bytes =
-                                      File(widget.path).readAsBytesSync();
+                                      File(path).readAsBytesSync();
                                   String img64 = base64Encode(bytes);
                                   _markdownText =
                                       '<img width="100%" src="data:image/png;base64, $img64">';
