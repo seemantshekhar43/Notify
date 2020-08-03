@@ -5,9 +5,12 @@ import 'package:notify/providers/note.dart';
 import 'package:notify/providers/notebooks.dart';
 import 'package:notify/providers/notes.dart';
 import 'package:html_editor/html_editor.dart';
+import 'package:notify/utilities/http_exception.dart';
 import 'package:notify/widgets/add_note.dart';
 import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:share/share.dart';
+import '../utilities/api_helper.dart' as apiHelper;
 
 class NoteDetailScreen extends StatefulWidget {
   static const routeName = '/note-detail-screen';
@@ -19,6 +22,7 @@ class NoteDetailScreen extends StatefulWidget {
 class _NoteDetailScreenState extends State<NoteDetailScreen> {
   var _noteId;
   GlobalKey<HtmlEditorState> keyEditor = GlobalKey();
+  String message = '';
   bool _isLoading =false;
   String result = "";
 
@@ -61,6 +65,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                 onPressed: () async {
                   setState(() {
                     _isLoading = true;
+                    message = 'Saving Changes';
                   });
                   final txt = await keyEditor.currentState.getText();
                   try{
@@ -77,9 +82,47 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   }
                   setState(() {
                     _isLoading = false;
+
                   });
                 },
                 icon: Icon(Icons.save),
+              ),
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: () async{
+                  setState(() {
+                    _isLoading = true;
+                    message = 'Generating Link';
+                  });
+                  try{
+                    String url = await apiHelper.getShareableLink(note);
+                    if(url.isNotEmpty){
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      Share.share(url);
+                    }else {
+                      Flushbar(
+                        message: "Shareable link generation failed!",
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                    }
+
+                  } on HttpException catch (error) {
+                    Flushbar(
+                      message: error.toString(),
+                      duration: Duration(seconds: 3),
+                    )..show(context);
+                  } catch (error) {
+                    Flushbar(
+                      message: "Shareable link generation failed!",
+                      duration: Duration(seconds: 3),
+                    )..show(context);
+                  }
+                  setState(() {
+                    _isLoading = false;
+                  });
+                },
               ),
             ],
           ),
@@ -179,7 +222,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                         ),
                         SizedBox(height: size.width*0.05,),
                         Text(
-                          'Saving Changes',
+                          message,
                           textScaleFactor: 1.0,
                           style: TextStyle(
                             color: Colors.white,
