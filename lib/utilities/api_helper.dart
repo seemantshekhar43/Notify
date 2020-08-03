@@ -40,7 +40,6 @@ Future<String> renderImageToText(String path) async{
   }catch(error){
     throw error;
   }
-
 }
 
 
