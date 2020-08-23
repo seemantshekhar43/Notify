@@ -2,6 +2,8 @@
 
 Notify is a modern note taking app, developed as a solution for problem statement given by Govt. of Puducherry in Smart India Hackathon 2020. This app is built in Flutter which makes it executable on both Android and iOS platform from a single codebase.
 
+## PS: This project(Notify) is winner of Smart India Hackathon 2020.
+
 ## Technology Stack
 - Flutter (Dart)
 - Java
